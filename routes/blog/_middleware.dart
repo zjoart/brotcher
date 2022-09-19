@@ -1,17 +1,12 @@
+import 'package:butcher/data/blog_interface_impl.dart';
+import 'package:butcher/interfaces/blog_interface.dart';
+import 'package:butcher/services/blog_services.dart';
 import 'package:dart_frog/dart_frog.dart';
 
-import '../../helpers/logger.dart';
-
 Handler middleware(Handler handler) {
-  return (context) async {
-    await letMeKnow('Starting url  ${context.request.url}');
-
-    final response = await handler(context);
-
-    // Execute code after request is handled.
-    await letMeKnow('Ending url  ${context.request.url}');
-
-    // Return a response.
-    return response;
-  };
+  final _blogImpl = BlogInterfaceImpl();
+  return handler
+      .use(requestLogger())
+      .use(provider<BlogInterface>((_) => _blogImpl))
+      .use(provider<BlogService>((_) => BlogService(_blogImpl)));
 }

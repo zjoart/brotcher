@@ -1,17 +1,12 @@
+import 'package:butcher/data/admin_interface_impl.dart';
+import 'package:butcher/interfaces/admin_interface.dart';
+import 'package:butcher/services/admin_services.dart';
 import 'package:dart_frog/dart_frog.dart';
 
-import '../../helpers/logger.dart';
-
 Handler middleware(Handler handler) {
-  return (context) async {
-    await letMeKnow('Starting url  ${context.request.url}');
-
-    final response = await handler(context);
-
-    // Execute code after request is handled.
-    await letMeKnow('Ending url  ${context.request.url}');
-
-    // Return a response.
-    return response;
-  };
+  final _adminImpl = AdminInterfaceImpl();
+  return handler
+      .use(requestLogger())
+      .use(provider<AdminInterface>((_) => _adminImpl))
+      .use(provider<AdminService>((_) => AdminService(_adminImpl)));
 }
